@@ -4,14 +4,12 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  # for flash messages / safety
+app.secret_key = "supersecretkey"  # for popup/flash safety
 
 # -------------------------
 # DATABASE CONFIG
 # -------------------------
-
-# Use the exact env variable name from Render
-DATABASE_URL = os.getenv("Database_url")  
+DATABASE_URL = os.getenv("Database_url")  # Use exact env var from Render
 
 if not DATABASE_URL:
     raise RuntimeError("Database_url environment variable not set!")
@@ -28,7 +26,6 @@ db = SQLAlchemy(app)
 # -------------------------
 # DATABASE MODEL
 # -------------------------
-
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -42,7 +39,6 @@ class Player(db.Model):
 # -------------------------
 # CREATE TABLE AND IMPORT CSV IF EMPTY
 # -------------------------
-
 with app.app_context():
     db.create_all()
     if Player.query.count() == 0:
@@ -64,7 +60,6 @@ with app.app_context():
 # -------------------------
 # ROUTES
 # -------------------------
-
 @app.route("/")
 def index():
     search = request.args.get("search")
@@ -99,8 +94,8 @@ def bid():
         return jsonify({"success": False, "message": f"Bid must be higher than current bid ({player.current_price})"})
 
 # -------------------------
-# RUN APP
+# RUN APP (Render port binding)
 # -------------------------
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
