@@ -1,51 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IPL Auction</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>IPL Auction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<div class="header">
-    <h1>IPL Auction</h1>
-    <form method="GET" class="search-form">
-        <input type="text" name="search" placeholder="Search player" value="{{ request.args.get('search', '') }}">
-        <select name="role">
-            <option value="All">All Roles</option>
-            <option value="Batsman">Batsman</option>
-            <option value="Bowler">Bowler</option>
-            <option value="All-Rounder">All-Rounder</option>
-        </select>
-        <button type="submit">Search</button>
-    </form>
-    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
-</div>
-
-<div class="players-container">
-    {% for player in players %}
-    <div class="player-card">
-        <h3>{{ player.name }}</h3>
-        <p>Team: {{ player.team }}</p>
-        <p>Role: {{ player.role }}</p>
-        <p>Country: {{ player.country }}</p>
-        <p>Current Price: ₹{{ player.current_price }}</p>
-        <form action="{{ url_for('bid') }}" method="POST">
-            <input type="hidden" name="player_id" value="{{ player.id }}">
-            <input type="number" name="price" placeholder="Enter bid" required>
-            <button type="submit">Update Bid</button>
+    <div class="header">
+        <h1>IPL Auction</h1>
+        <form class="search-bar" method="get" action="{{ url_for('index') }}">
+            <input type="text" name="search" placeholder="Search Player" value="{{ search }}">
+            <button type="submit">Search</button>
         </form>
     </div>
-    {% endfor %}
-</div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="flash {{ category }}">{{ message }}</div>
+    <table>
+        <tr>
+            <th>Player</th>
+            <th>Team</th>
+            <th>Base Price</th>
+            <th>Current Bid</th>
+            <th>Update Bid</th>
+        </tr>
+        {% for player in players %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.team }}</td>
+            <td>{{ player.base_price }}</td>
+            <td>{{ player.bid or player.base_price }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('update_bid', player_id=player.id) }}">
+                    <input type="number" name="bid" placeholder="Enter bid" required>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
         {% endfor %}
-    {% endif %}
-{% endwith %}
-
+    </table>
 </body>
 </html>
