@@ -16,6 +16,21 @@ body {
     align-items: center;
 }
 
+.logout-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+
 /* Flash messages */
 .flash {
     background-color: #27ae60;
@@ -114,7 +129,7 @@ button:hover {
 /* Search bar */
 .search-bar {
     text-align: center;
-    margin: 0;
+    margin: 20px;
 }
 
 .search-bar input {
