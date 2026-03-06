@@ -1,0 +1,21 @@
+id,name,team,role,country,base_price,current_price,sold
+1,Virat Kohli,RCB,Batsman,India,2000000,2000000,False
+2,Rohit Sharma,MI,Batsman,India,2000000,2000000,False
+3,Jasprit Bumrah,MI,Bowler,India,1500000,1500000,False
+4,MS Dhoni,CSK,Wicketkeeper,India,1500000,1500000,False
+5,Ravindra Jadeja,CSK,Allrounder,India,1500000,1500000,False
+6,Hardik Pandya,MI,Allrounder,India,2000000,2000000,False
+7,KL Rahul,LSG,Wicketkeeper,India,2000000,2000000,False
+8,Shubman Gill,GT,Batsman,India,1500000,1500000,False
+9,Andre Russell,KKR,Allrounder,West Indies,2000000,2000000,False
+10,Sunil Narine,KKR,Bowler,West Indies,1500000,1500000,False
+11,Jos Buttler,RR,Wicketkeeper,England,2000000,2000000,False
+12,Ben Stokes,CSK,Allrounder,England,2000000,2000000,False
+13,David Warner,DC,Batsman,Australia,1500000,1500000,False
+14,Kane Williamson,GT,Batsman,New Zealand,1500000,1500000,False
+15,Pat Cummins,SRH,Bowler,Australia,2000000,2000000,False
+16,Rashid Khan,GT,Bowler,Afghanistan,2000000,2000000,False
+17,Trent Boult,RR,Bowler,New Zealand,1500000,1500000,False
+18,Sanju Samson,RR,Wicketkeeper,India,1500000,1500000,False
+19,Axar Patel,DC,Allrounder,India,1200000,1200000,False
+20,Arshdeep Singh,PBKS,Bowler,India,1000000,1000000,False
