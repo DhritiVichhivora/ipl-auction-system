@@ -1,19 +1,25 @@
-/* General */
+/* ===================== GENERAL ===================== */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f6fa;
+    background: linear-gradient(135deg, #fefcea, #f1da36);
     margin: 0;
     padding: 0;
+    color: #2c3e50;
 }
 
-/* Header */
+a {
+    text-decoration: none;
+}
+
+/* ===================== HEADER ===================== */
 .header {
-    background-color: #2c3e50;
+    background-color: #1e2a38;
     color: #fff;
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
 }
 
 .logout-btn {
@@ -22,7 +28,6 @@ body {
     padding: 8px 15px;
     border: none;
     border-radius: 5px;
-    text-decoration: none;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -31,7 +36,7 @@ body {
     background-color: #c0392b;
 }
 
-/* Flash messages */
+/* ===================== FLASH MESSAGES ===================== */
 .flash {
     background-color: #27ae60;
     color: #fff;
@@ -40,106 +45,142 @@ body {
     width: fit-content;
     border-radius: 5px;
     text-align: center;
+    font-weight: bold;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Login Page */
+/* ===================== LOGIN PAGE ===================== */
 .login-container {
     max-width: 400px;
     margin: 100px auto;
     padding: 30px;
     background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+    border-radius: 15px;
+    box-shadow: 0px 0px 25px rgba(0,0,0,0.2);
     text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
 }
 
 .login-container h2 {
-    margin-bottom: 20px;
-    color: #2c3e50;
+    margin-bottom: 25px;
+    color: #1e2a38;
 }
 
 .login-container input {
     width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 8px;
     border: 1px solid #ccc;
+    font-size: 14px;
 }
 
 .login-container button {
     width: 95%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 15px;
-    background-color: #2c3e50;
+    background: linear-gradient(45deg, #e67e22, #d35400);
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
 }
 
 .login-container button:hover {
-    background-color: #34495e;
+    background: linear-gradient(45deg, #d35400, #e67e22);
 }
 
-/* Auction Table */
-table {
-    width: 90%;
-    margin: 30px auto;
-    border-collapse: collapse;
+/* ===================== AUCTION PAGE ===================== */
+.players-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    margin: 30px;
+}
+
+.player-card {
     background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-}
-
-th, td {
-    padding: 12px 15px;
+    padding: 20px;
+    border-radius: 15px;
+    width: 220px;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
     text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
-th {
-    background-color: #34495e;
+.player-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 12px 25px rgba(0,0,0,0.2);
+}
+
+.player-card h3 {
+    margin-bottom: 8px;
+    color: #1e2a38;
+}
+
+.player-card p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.player-card input {
+    width: 80%;
+    padding: 6px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.player-card button {
+    width: 85%;
+    padding: 8px;
+    background: linear-gradient(45deg, #3498db, #2980b9);
     color: #fff;
-}
-
-tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-tr:hover {
-    background-color: #dcdde1;
-}
-
-/* Buttons */
-button {
-    background-color: #3498db;
-    color: #fff;
-    padding: 7px 12px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
 }
 
-button:hover {
-    background-color: #2980b9;
+.player-card button:hover {
+    background: linear-gradient(45deg, #2980b9, #3498db);
 }
 
-/* Search bar */
+/* ===================== SEARCH BAR ===================== */
 .search-bar {
     text-align: center;
-    margin: 20px;
+    margin: 20px 0;
 }
 
 .search-bar input {
-    padding: 8px;
-    width: 200px;
-    border-radius: 5px;
+    padding: 10px;
+    width: 250px;
+    border-radius: 8px;
     border: 1px solid #ccc;
+    font-size: 14px;
 }
 
 .search-bar button {
-    padding: 8px 12px;
-    border-radius: 5px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(45deg, #27ae60, #2ecc71);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.search-bar button:hover {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+}
+
+/* ===================== ANIMATIONS ===================== */
+@keyframes fadeIn {
+    0% {opacity: 0; transform: translateY(-20px);}
+    100% {opacity: 1; transform: translateY(0);}
 }
