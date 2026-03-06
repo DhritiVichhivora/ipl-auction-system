@@ -7,16 +7,28 @@
 </head>
 <body>
     <div class="header">
-        <h1>IPL Auction</h1>
-        <form class="search-bar" method="get" action="{{ url_for('index') }}">
-            <input type="text" name="search" placeholder="Search Player" value="{{ search }}">
+        <h1>Welcome, {{ session['user_name'] }}</h1>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="search-bar">
+        <form method="GET" action="{{ url_for('index') }}">
+            <input type="text" name="search" placeholder="Search player..." value="{{ request.args.get('search','') }}">
             <button type="submit">Search</button>
         </form>
     </div>
 
     <table>
         <tr>
-            <th>Player</th>
+            <th>Name</th>
             <th>Team</th>
             <th>Base Price</th>
             <th>Current Bid</th>
@@ -24,16 +36,17 @@
         </tr>
         {% for player in players %}
         <tr>
-            <td>{{ player.name }}</td>
-            <td>{{ player.team }}</td>
-            <td>{{ player.base_price }}</td>
-            <td>{{ player.bid or player.base_price }}</td>
-            <td>
-                <form method="POST" action="{{ url_for('update_bid', player_id=player.id) }}">
-                    <input type="number" name="bid" placeholder="Enter bid" required>
+            <form method="POST" action="{{ url_for('index') }}">
+                <td>{{ player.name }}</td>
+                <td>{{ player.team }}</td>
+                <td>{{ player.base_price }}</td>
+                <td>{{ player.current_bid }}</td>
+                <td>
+                    <input type="hidden" name="player_id" value="{{ player.id }}">
+                    <input type="number" name="new_bid" placeholder="New Bid" required>
                     <button type="submit">Update</button>
-                </form>
-            </td>
+                </td>
+            </form>
         </tr>
         {% endfor %}
     </table>
