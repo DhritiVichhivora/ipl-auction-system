@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>IPL Auction System</title>
+    <meta charset="UTF-8">
+    <title>IPL Auction Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
 <h1>🏏 IPL Auction Dashboard</h1>
 
 <!-- Search bar -->
-<input type="text" id="searchInput" placeholder="Search player name..." onkeyup="searchPlayer()">
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search player..." onkeyup="searchPlayer()">
+</div>
 
 <table id="playersTable">
-
     <tr>
-        <th>Player Name</th>
+        <th>Name</th>
         <th>Team</th>
         <th>Role</th>
         <th>Country</th>
@@ -27,88 +27,47 @@
     </tr>
 
     {% for player in players %}
-
     <tr>
-        <td>{{ player.player_name }}</td>
+        <td>{{ player.name }}</td>
         <td>{{ player.team }}</td>
         <td>{{ player.role }}</td>
         <td>{{ player.country }}</td>
         <td>{{ player.base_price }}</td>
-        <td>{{ player.current_bid }}</td>
-
-        <td>
-            <input type="number" id="bid_{{ loop.index }}" placeholder="Enter bid">
-        </td>
-
-        <td>
-            <button onclick="updateBid('{{ player.player_name }}', {{ loop.index }})">
-                Update Bid
-            </button>
-        </td>
+        <td id="current_{{ player.id }}">{{ player.current_price }}</td>
+        <td><input type="number" id="bid_{{ player.id }}" placeholder="Enter bid"></td>
+        <td><button onclick="updateBid({{ player.id }})">Update Bid</button></td>
     </tr>
-
     {% endfor %}
-
 </table>
 
-
 <script>
-
 function searchPlayer() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const table = document.getElementById("playersTable");
+    const trs = table.getElementsByTagName("tr");
 
-    let input = document.getElementById("searchInput");
-    let filter = input.value.toLowerCase();
-    let table = document.getElementById("playersTable");
-    let tr = table.getElementsByTagName("tr");
-
-    for (let i = 1; i < tr.length; i++) {
-
-        let td = tr[i].getElementsByTagName("td")[0];
-
-        if (td) {
-
-            let txtValue = td.textContent || td.innerText;
-
-            if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
-
-        }
+    for (let i = 1; i < trs.length; i++) {
+        const td = trs[i].getElementsByTagName("td")[0];
+        trs[i].style.display = td && td.innerText.toLowerCase().includes(input) ? "" : "none";
     }
 }
 
+function updateBid(playerId) {
+    const bidValue = document.getElementById(`bid_${playerId}`).value;
 
-function updateBid(player, index) {
-
-    let bidValue = document.getElementById("bid_" + index).value;
-
-    fetch("/update_bid", {
-
+    fetch("/bid", {
         method: "POST",
-
-        headers: {
-            "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-            player_name: player,
-            new_bid: bidValue
-        })
-
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `player_id=${playerId}&price=${bidValue}`
     })
-
     .then(response => response.json())
     .then(data => {
-
         alert(data.message);
-        location.reload();
-
+        if (data.success) {
+            document.getElementById(`current_${playerId}`).innerText = bidValue;
+        }
     });
-
 }
-
 </script>
 
 </body>
