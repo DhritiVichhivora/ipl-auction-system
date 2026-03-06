@@ -4,12 +4,59 @@
     <meta charset="UTF-8">
     <title>IPL Auction Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        input[type=number] {
+            width: 80px;
+            padding: 5px;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
+        .search-box {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .search-box input {
+            padding: 5px;
+            width: 250px;
+        }
+    </style>
 </head>
 <body>
 
 <h1>🏏 IPL Auction Dashboard</h1>
 
-<!-- Search bar -->
 <div class="search-box">
     <input type="text" id="searchInput" placeholder="Search player..." onkeyup="searchPlayer()">
 </div>
@@ -65,6 +112,7 @@ function updateBid(playerId) {
         alert(data.message);
         if (data.success) {
             document.getElementById(`current_${playerId}`).innerText = bidValue;
+            document.getElementById(`bid_${playerId}`).value = ""; // clear input
         }
     });
 }
