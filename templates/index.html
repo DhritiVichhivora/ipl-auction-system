@@ -2,121 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>IPL Auction Dashboard</title>
+    <title>IPL Auction</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f8f8f8;
+    <script>
+        function updateBid(playerId) {
+            const price = prompt("Enter your bid price:");
+            if (price !== null && price !== "") {
+                document.getElementById("bidPlayerId").value = playerId;
+                document.getElementById("bidPrice").value = price;
+                document.getElementById("bidForm").submit();
+            }
         }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: white;
-        }
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #3498db;
-            color: white;
-        }
-        input[type=number] {
-            width: 80px;
-            padding: 5px;
-        }
-        button {
-            padding: 5px 10px;
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #2ecc71;
-        }
-        .search-box {
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .search-box input {
-            padding: 5px;
-            width: 250px;
-        }
-    </style>
+    </script>
 </head>
 <body>
+    <div class="header">
+        <span>Welcome, {{ user_name }}!</span>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
 
-<h1>🏏 IPL Auction Dashboard</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
 
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search player..." onkeyup="searchPlayer()">
-</div>
+    <div class="search-bar">
+        <form method="GET" action="{{ url_for('auction') }}">
+            <input type="text" name="search" placeholder="Search player">
+            <button type="submit">Search</button>
+        </form>
+    </div>
 
-<table id="playersTable">
-    <tr>
-        <th>Name</th>
-        <th>Team</th>
-        <th>Role</th>
-        <th>Country</th>
-        <th>Base Price</th>
-        <th>Current Bid</th>
-        <th>New Bid</th>
-        <th>Action</th>
-    </tr>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Team</th>
+                <th>Role</th>
+                <th>Country</th>
+                <th>Base Price</th>
+                <th>Current Price</th>
+                <th>Bid</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in players %}
+            <tr>
+                <td>{{ player.name }}</td>
+                <td>{{ player.team }}</td>
+                <td>{{ player.role }}</td>
+                <td>{{ player.country }}</td>
+                <td>{{ player.base_price }}</td>
+                <td>{{ player.current_price }}</td>
+                <td>
+                    <button onclick="updateBid({{ player.id }})">Update Bid</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    {% for player in players %}
-    <tr>
-        <td>{{ player.name }}</td>
-        <td>{{ player.team }}</td>
-        <td>{{ player.role }}</td>
-        <td>{{ player.country }}</td>
-        <td>{{ player.base_price }}</td>
-        <td id="current_{{ player.id }}">{{ player.current_price }}</td>
-        <td><input type="number" id="bid_{{ player.id }}" placeholder="Enter bid"></td>
-        <td><button onclick="updateBid({{ player.id }})">Update Bid</button></td>
-    </tr>
-    {% endfor %}
-</table>
-
-<script>
-function searchPlayer() {
-    const input = document.getElementById("searchInput").value.toLowerCase();
-    const table = document.getElementById("playersTable");
-    const trs = table.getElementsByTagName("tr");
-
-    for (let i = 1; i < trs.length; i++) {
-        const td = trs[i].getElementsByTagName("td")[0];
-        trs[i].style.display = td && td.innerText.toLowerCase().includes(input) ? "" : "none";
-    }
-}
-
-function updateBid(playerId) {
-    const bidValue = document.getElementById(`bid_${playerId}`).value;
-
-    fetch("/bid", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `player_id=${playerId}&price=${bidValue}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        if (data.success) {
-            document.getElementById(`current_${playerId}`).innerText = bidValue;
-            document.getElementById(`bid_${playerId}`).value = ""; // clear input
-        }
-    });
-}
-</script>
-
+    <form id="bidForm" method="POST" action="{{ url_for('bid') }}" style="display:none;">
+        <input type="hidden" name="player_id" id="bidPlayerId">
+        <input type="hidden" name="price" id="bidPrice">
+    </form>
 </body>
 </html>
