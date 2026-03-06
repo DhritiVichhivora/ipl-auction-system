@@ -1,69 +1,83 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.secret_key = "supersecretkey"  # Change this in production
 
-# Use your Render Postgres URL
-app.config["SQLALCHEMY_DATABASE_URI"] = "Database_url"
+# DATABASE SETUP
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# --- MODELS ---
+# MODELS
 class User(db.Model):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))  # Plain password for simplicity
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    base_price = db.Column(db.Integer)
     team = db.Column(db.String(50))
-    bid = db.Column(db.Integer)
+    base_price = db.Column(db.Integer)
+    current_bid = db.Column(db.Integer)
 
-# --- LOGIN PAGE ---
+# ROUTES
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get("email")
+        password = request.form.get("password")
 
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email, password=password).first()
         if user:
-            if user.password == password:
-                return redirect(url_for("index"))
-            else:
-                flash("Incorrect password")
-        else:
-            new_user = User(name=name, email=email, password=password)
-            db.session.add(new_user)
-            db.session.commit()
+            session["user_id"] = user.id
+            session["user_name"] = user.name
             return redirect(url_for("index"))
+        else:
+            flash("Invalid credentials", "error")
+            return redirect(url_for("login"))
+
     return render_template("login.html")
 
-# --- AUCTION PAGE ---
-@app.route("/auction")
+@app.route("/index", methods=["GET", "POST"])
 def index():
-    search = request.args.get('search', '')
-    if search:
-        players = Player.query.filter(Player.name.ilike(f"%{search}%")).all()
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    search_query = request.args.get("search", "")
+    if search_query:
+        players = Player.query.filter(Player.name.ilike(f"%{search_query}%")).all()
     else:
         players = Player.query.all()
-    return render_template("index.html", players=players, search=search)
 
-# --- UPDATE BID ---
-@app.route("/update_bid/<int:player_id>", methods=["POST"])
-def update_bid(player_id):
-    player = Player.query.get(player_id)
-    new_bid = int(request.form['bid'])
-    if new_bid > (player.bid or player.base_price):
-        player.bid = new_bid
-        db.session.commit()
-    return redirect(url_for("index"))
+    if request.method == "POST":
+        player_id = request.form.get("player_id")
+        new_bid = request.form.get("new_bid")
+        player = Player.query.get(player_id)
+        if player and new_bid.isdigit():
+            player.current_bid = int(new_bid)
+            db.session.commit()
+            flash(f"Bid updated for {player.name}", "success")
+        return redirect(url_for("index"))
+
+    return render_template("index.html", players=players)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 if __name__ == "__main__":
+    # Create tables if not exists
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
