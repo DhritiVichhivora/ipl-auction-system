@@ -4,68 +4,78 @@
     <meta charset="UTF-8">
     <title>IPL Auction</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script>
-        function updateBid(playerId) {
-            const price = prompt("Enter your bid price:");
-            if (price !== null && price !== "") {
-                document.getElementById("bidPlayerId").value = playerId;
-                document.getElementById("bidPrice").value = price;
-                document.getElementById("bidForm").submit();
-            }
-        }
-    </script>
 </head>
 <body>
-    <div class="header">
-        <span>Welcome, {{ user_name }}!</span>
-        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+
+<div class="header">
+    <h1>IPL Auction</h1>
+</div>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="flash-container">
+      {% for category, message in messages %}
+        <div class="flash" style="background-color: {% if category=='success' %}#27ae60{% else %}#e74c3c{% endif %};">
+          {{ message }}
+        </div>
+      {% endfor %}
     </div>
+    <script>
+        // Auto-hide flash after 3 seconds
+        setTimeout(() => { document.getElementById('flash-container').style.display = 'none'; }, 3000);
+    </script>
+  {% endif %}
+{% endwith %}
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash">{{ messages[0] }}</div>
-      {% endif %}
-    {% endwith %}
-
-    <div class="search-bar">
-        <form method="GET" action="{{ url_for('auction') }}">
-            <input type="text" name="search" placeholder="Search player">
-            <button type="submit">Search</button>
-        </form>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Team</th>
-                <th>Role</th>
-                <th>Country</th>
-                <th>Base Price</th>
-                <th>Current Price</th>
-                <th>Bid</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for player in players %}
-            <tr>
-                <td>{{ player.name }}</td>
-                <td>{{ player.team }}</td>
-                <td>{{ player.role }}</td>
-                <td>{{ player.country }}</td>
-                <td>{{ player.base_price }}</td>
-                <td>{{ player.current_price }}</td>
-                <td>
-                    <button onclick="updateBid({{ player.id }})">Update Bid</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <form id="bidForm" method="POST" action="{{ url_for('bid') }}" style="display:none;">
-        <input type="hidden" name="player_id" id="bidPlayerId">
-        <input type="hidden" name="price" id="bidPrice">
+<!-- Search -->
+<div class="search-bar">
+    <form method="GET" action="/">
+        <input type="text" name="search" placeholder="Search Player" value="{{ request.args.get('search','') }}">
+        <button type="submit">Search</button>
     </form>
+</div>
+
+<!-- Auction Table -->
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Team</th>
+        <th>Role</th>
+        <th>Country</th>
+        <th>Base Price</th>
+        <th>Current Price</th>
+        <th>Bid</th>
+    </tr>
+    {% for player in players %}
+    <tr>
+        <td>{{ player.name }}</td>
+        <td>{{ player.team }}</td>
+        <td>{{ player.role }}</td>
+        <td>{{ player.country }}</td>
+        <td>₹{{ player.base_price }}</td>
+        <td>₹{{ player.current_price }}</td>
+        <td>
+            <form method="POST" action="/bid" onsubmit="return validateBid(this, {{ player.current_price }});">
+                <input type="hidden" name="player_id" value="{{ player.id }}">
+                <input type="number" name="price" min="{{ player.current_price + 1 }}" required>
+                <button type="submit">Update Bid</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+function validateBid(form, currentPrice) {
+    let bid = parseInt(form.price.value);
+    if (bid <= currentPrice) {
+        alert("Bid must be higher than current price: ₹" + currentPrice);
+        return false;
+    }
+    return true;
+}
+</script>
+
 </body>
 </html>
